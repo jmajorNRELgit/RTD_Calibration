@@ -8,6 +8,9 @@ This module contains the REF class for the Instrulab 4201c reference probe.
 It has methods to establish the serial communication with the probe and to
 take temperature measurements 
 
+git test
+
+
 """
 
 import serial
