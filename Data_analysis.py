@@ -8,22 +8,9 @@ Created on Thu Oct 11 12:12:10 2018
 import pandas as pd
 import numpy as np
 import glob
+np.set_printoptions(suppress=True) #prevents numpy from printing in scientific notation
 
-#read file and give column names
 
-#df = pd.read_csv('C:/Users/jmajor/Desktop/Calibration raw data/Calibration at 50.0 degrees.csv', names = column_names, skiprows = 1)
-#
-##print out the standard deviation of each column to three decimal places
-#for i in range(9):
-#    print(df.columns[i], 'STD: ',np.around(np.std(df.iloc[:,i]),4),)
-#print('\n')
-#    
-#    
-##print out the mean of each column
-#print('Channel mean:')
-#print(df.mean(0))
-#
-#class to hold the raw calibration data
 class raw_data():
     
     def __init__(self, temperature, data):
@@ -37,6 +24,14 @@ class channel_data_class():
     def __init__(self, channel_data,name):
         self.channel_name = name
         self.channel_data = channel_data
+        self.cofficient = None
+        
+    def set_cof(self,cof):
+        self.cofficient = cof
+        
+    def poly_fit(self):
+        fit = np.poly1d(self.cofficient)
+        return fit(self.channel_data)
         
     
 #glob grabs all the filenames and column_names is used in the pandas dataframe
@@ -60,4 +55,10 @@ for i in range(9):
         lis.append(o.mean_data[i])
     channel_data.append(channel_data_class(lis,column_names[i]))
         
+for i in range(8):
+    cof = np.polyfit(channel_data[i].channel_data, channel_data[8].channel_data, 3)
+    channel_data[i].set_cof(cof)
+    
+for i in range(8):
+    print(np.round((channel_data[i].poly_fit() - channel_data[8].channel_data),6))
     
