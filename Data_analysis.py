@@ -10,7 +10,7 @@ import numpy as np
 import glob
 np.set_printoptions(suppress=True) #prevents numpy from printing in scientific notation
 
-
+#class to hold the raw data
 class raw_data():
     
     def __init__(self, temperature, data):
@@ -18,7 +18,8 @@ class raw_data():
         self.data = data
         self.mean_data = self.data.mean()
         self.std_data = np.std(self.data)
-        
+
+#class to hold the channel specific data through the whole temperature range 
 class channel_data_class():
     
     def __init__(self, channel_data,name):
@@ -39,26 +40,29 @@ files = glob.glob(r'C:\Users\jmajor\Desktop\github\RTD_Calibration\Raw temp data
 column_names = ['Channel 1','Channel 2','Channel 3','Channel 4','Channel 5','Channel 6','Channel 7','Channel 8','REF',]
 
 
-obj = [] #this will be a list of raw_data object instances
-temps = ['50','60','70', '80', '90']
 
+temps = ['50','60','70', '80', '90', '100'] #this is the temperatures used in the raw_data class
+
+obj = [] #this will be a list of raw_data object instances
 i = 0
-for file in files:
-    
+for file in files: #reads the raw data into the raw_data class
     obj.append(raw_data(temps[i], pd.read_csv(file, names = column_names, skiprows = 1)))
     i+=1
 
-channel_data = []
-for i in range(9):
-    lis = []
+
+channel_data = []  #this will be a list of channel_data object instances
+for i in range(9): #range 9 because 8 daq channels and one ref channel
+    lis = [] #list to hold the channel temp data. resets 9 times. onece for each channel
     for o in obj:
-        lis.append(o.mean_data[i])
+        lis.append(o.mean_data[i]) #the mean of the 20 samples taken
     channel_data.append(channel_data_class(lis,column_names[i]))
-        
+
+#uses np.polyfit to fit the daq data to the ref data. Saves info in the channel_data class
 for i in range(8):
     cof = np.polyfit(channel_data[i].channel_data, channel_data[8].channel_data, 3)
     channel_data[i].set_cof(cof)
-    
+
+#prints the difference between the fit channel temperatures and the ref temps
 for i in range(8):
-    print(np.round((channel_data[i].poly_fit() - channel_data[8].channel_data),6))
+    print(channel_data[i].channel_name,np.round((channel_data[i].poly_fit() - channel_data[8].channel_data),6))
     
