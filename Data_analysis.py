@@ -32,7 +32,7 @@ class raw_data():
         self.mean_data = self.data.mean()
         self.std_data = np.std(self.data)
         
-class channel_data():
+class channel_data_class():
     
     def __init__(self, channel_data,name):
         self.channel_name = name
@@ -40,12 +40,12 @@ class channel_data():
         
     
 #glob grabs all the filenames and column_names is used in the pandas dataframe
-files = glob.glob(r'C:\Users\jmajor\Desktop\Calibration raw data\*.csv')
+files = glob.glob(r'C:\Users\jmajor\Desktop\github\RTD_Calibration\Raw temp data\*.csv')
 column_names = ['Channel 1','Channel 2','Channel 3','Channel 4','Channel 5','Channel 6','Channel 7','Channel 8','REF',]
 
 
 obj = [] #this will be a list of raw_data object instances
-temps = ['50','60','70']
+temps = ['50','60','70', '80', '90']
 
 i = 0
 for file in files:
@@ -58,5 +58,6 @@ for i in range(9):
     lis = []
     for o in obj:
         lis.append(o.mean_data[i])
+    channel_data.append(channel_data_class(lis,column_names[i]))
         
     
