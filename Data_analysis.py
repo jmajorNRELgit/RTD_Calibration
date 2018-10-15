@@ -66,8 +66,8 @@ for i in range(8):
 #prints the difference between the fit channel temperatures and the ref temps
 for i in range(8):
     print(channel_data[i].channel_name,(channel_data[i].poly_fit() - channel_data[8].channel_data))
-    #plt.plot(np.round((channel_data[i].poly_fit() - channel_data[8].channel_data),6), label = channel_data[i].channel_name )
-    #plt.legend()
+    plt.plot(np.round((channel_data[i].poly_fit() - channel_data[8].channel_data),6), label = channel_data[i].channel_name )
+    plt.legend()
   
 #Print the coefficients to a csv file
 cof_list = pd.DataFrame()
