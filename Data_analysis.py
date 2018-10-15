@@ -4,11 +4,12 @@ Created on Thu Oct 11 12:12:10 2018
 
 @author: jmajor
 """
-
+import csv
 import pandas as pd
-import numpy as np
+import matplotlib.pyplot as plt
 import glob
-np.set_printoptions(suppress=True) #prevents numpy from printing in scientific notation
+import numpy as np
+np.set_printoptions(suppress=False) #prevents numpy from printing in scientific notation
 
 #class to hold the raw data
 class raw_data():
@@ -25,13 +26,13 @@ class channel_data_class():
     def __init__(self, channel_data,name):
         self.channel_name = name
         self.channel_data = channel_data
-        self.cofficient = None
+        self.coefficient = None
         
     def set_cof(self,cof):
-        self.cofficient = cof
+        self.coefficient = cof
         
     def poly_fit(self):
-        fit = np.poly1d(self.cofficient)
+        fit = np.poly1d(self.coefficient)
         return fit(self.channel_data)
         
     
@@ -41,7 +42,7 @@ column_names = ['Channel 1','Channel 2','Channel 3','Channel 4','Channel 5','Cha
 
 
 
-temps = ['50','60','70', '80', '90', '100'] #this is the temperatures used in the raw_data class
+temps = ['50','60','70', '80', '90', '100', '120'] #this is the temperatures used in the raw_data class
 
 obj = [] #this will be a list of raw_data object instances
 i = 0
@@ -59,10 +60,19 @@ for i in range(9): #range 9 because 8 daq channels and one ref channel
 
 #uses np.polyfit to fit the daq data to the ref data. Saves info in the channel_data class
 for i in range(8):
-    cof = np.polyfit(channel_data[i].channel_data, channel_data[8].channel_data, 3)
+    cof = np.polyfit(channel_data[i].channel_data, channel_data[8].channel_data, 5)
     channel_data[i].set_cof(cof)
 
 #prints the difference between the fit channel temperatures and the ref temps
 for i in range(8):
-    print(channel_data[i].channel_name,np.round((channel_data[i].poly_fit() - channel_data[8].channel_data),6))
+    print(channel_data[i].channel_name,(channel_data[i].poly_fit() - channel_data[8].channel_data))
+    #plt.plot(np.round((channel_data[i].poly_fit() - channel_data[8].channel_data),6), label = channel_data[i].channel_name )
+    #plt.legend()
+  
+#Print the coefficients to a csv file
+cof_list = pd.DataFrame()
+for i in range(8):
+    cof_list['Channel {}:'.format(i+1)] = pd.Series(channel_data[i].coefficient)
+cof_list.to_csv('coefficient_list.csv')
+    
     
