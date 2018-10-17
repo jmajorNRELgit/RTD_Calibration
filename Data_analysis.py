@@ -42,12 +42,12 @@ column_names = ['Channel 1','Channel 2','Channel 3','Channel 4','Channel 5','Cha
 
 
 
-temps = ['50','60','70', '80', '90', '100', '120'] #this is the temperatures used in the raw_data class
+temps = ['50','60','70', '80', '90', '100', '120', '130','140','150','160','170','180','190','200','210'] #this is the temperatures used in the raw_data class
 
 obj = [] #this will be a list of raw_data object instances
 i = 0
 for file in files: #reads the raw data into the raw_data class
-    obj.append(raw_data(temps[i], pd.read_csv(file, names = column_names, skiprows = 1)))
+    obj.append(raw_data(file[-17:-12], pd.read_csv(file, names = column_names, skiprows = 1)))
     i+=1
 
 
