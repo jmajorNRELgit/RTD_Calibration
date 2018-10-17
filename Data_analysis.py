@@ -13,29 +13,33 @@ np.set_printoptions(suppress=False) #prevents numpy from printing in scientific 
 
 #class to hold the raw data
 class raw_data():
-    
+
     def __init__(self, temperature, data):
         self.temp = temperature
         self.data = data
         self.mean_data = self.data.mean()
         self.std_data = np.std(self.data)
 
-#class to hold the channel specific data through the whole temperature range 
+#class to hold the channel specific data through the whole temperature range
 class channel_data_class():
-    
+
     def __init__(self, channel_data,name):
         self.channel_name = name
         self.channel_data = channel_data
         self.coefficient = None
-        
+        self.difference = None
+
     def set_cof(self,cof):
         self.coefficient = cof
-        
+
     def poly_fit(self):
         fit = np.poly1d(self.coefficient)
         return fit(self.channel_data)
-        
-    
+
+    def set_difference(self, difference_list):
+        self.difference = difference_list
+
+
 #glob grabs all the filenames and column_names is used in the pandas dataframe
 files = glob.glob(r'C:\Users\jmajor\Desktop\github\RTD_Calibration\Raw temp data\*.csv')
 column_names = ['Channel 1','Channel 2','Channel 3','Channel 4','Channel 5','Channel 6','Channel 7','Channel 8','REF',]
@@ -66,13 +70,13 @@ for i in range(8):
 #prints the difference between the fit channel temperatures and the ref temps
 for i in range(8):
     print(channel_data[i].channel_name,(channel_data[i].poly_fit() - channel_data[8].channel_data))
+    channel_data[i].set_difference(channel_data[i].poly_fit() - channel_data[8].channel_data)
     plt.plot(np.round((channel_data[i].poly_fit() - channel_data[8].channel_data),6), label = channel_data[i].channel_name )
     plt.legend()
-  
+
 #Print the coefficients to a csv file
 cof_list = pd.DataFrame()
 for i in range(8):
     cof_list['Channel {}:'.format(i+1)] = pd.Series(channel_data[i].coefficient)
 cof_list.to_csv('coefficient_list.csv')
-    
-    
+
