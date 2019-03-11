@@ -74,10 +74,10 @@ class bath(object):
 
     def close_bath(self):
         self.bath_com.close()
-        print('Closed bath com')
 
 if __name__ == '__main__':
     b = bath()
+
     com = b.establish_bath_com('com13')
-    print(b.read_bath_setpoint())
+
     b.close_bath()
